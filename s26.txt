@@ -1,0 +1,75 @@
+Htmlfile
+<selectid=”employee-list”>
+<optionvalue=””>Selectanemployee</option>
+<!—PopulatethisdropdownwithemployeenamesusingPHP
+</select>
+<divid=”employee-details”>
+<!—Employeedetailswillbedisplayedhere
+</div>
+Ajaxfile
+$(document).ready(function(){
+//Addeventlistenertotheselectdropdown
+$(‘#employee-list’).change(function(){
+VarselectedEmployee=$(this).val();
+//MakeanAJAXrequesttofetchemployeedetails
+$.ajax({ url:‘empdetails.php’, type:‘POST’, data:{employeeName:selectedEmployee}, dataType:‘json’, success:function(response){
+//ParsetheJSONresponseanddisplayemployeedetails
+VardetailsHtml=‘EmployeeName:‘+response.ename+‘<br>’+
+‘Designation:‘+response.designation+‘<br>’+
+‘Salary:‘+response.salary;
+$(‘#employee-details’).html(detailsHtml);
+},
+Error:function(xhr,status,error){ Console.log(‘Error:’,error);
+}
+});
+});
+});
+Phpfileasempdetails.php
+<?php
+//Establishdatabaseconnection
+$conn=pg_connect(“host=localhostdbname=database_nameuser=username password=password”);
+If(!$conn){
+Die(‘Connectionfailed:‘.pg_last_error());
+}
+//GettheselectedemployeenamefromAJAXrequest
+$employeeName=$_POST[‘employeeName’];
+//QuerytheEMPtableforthedetailsoftheselectedemployee
+$sql=“SELECT*FROMEMPWHEREename=‘$employeeName’”; $result=pg_query($conn,$sql);
+If(pg_num_rows($result)>0){
+//BuildaJSONobjectwithemployeedetails
+$employee=pg_fetch_assoc($result);
+$response=array(
+‘ename’=>$employee[‘ename’],
+‘designation’=>$employee[‘designation’],
+‘salary’=>$employee[‘salary’]
+);
+Echojson_encode($response);
+}else{
+Echo“Employeenotfound”;
+}
+//Closedatabaseconnection
+Pg_close($conn);
+?>
+--------------------------------------------------------------------------------------------
+Importre
+Fromnltk.tokenizeimportsent_tokenize
+Fromsklearn.feature_extraction.textimportTfidfVectorizer
+Fromsklearn.metrics.pairwiseimportcosine_similarity
+#Texttosummarize
+Text=“Helloall,WelcometoPythonProgrammingAcademy.PythonProgrammingAcademyis aniceplatformtolearnnewprogrammingskills.ItisdifficulttogetenrolledinthisAcademy.”
+#Preprocessthetexttoremovespecialcharactersanddigits Preprocessed_text=re.sub(r’[^a-zA-Z\s]’,‘’,text)
+#Tokenizethepreprocessedtextintosentences
+Sentences=sent_tokenize(preprocessed_text)
+#CalculatetheimportancescoreofeachsentenceusingTF-IDF
+Vectorizer=TfidfVectorizer()
+Tfidf_matrix=vectorizer.fit_transform(sentences)
+Similarity_matrix=cosine_similarity(tfidf_matrix)
+#SelecttopNsentencesbasedontheirimportancescore
+N=2
+Top_sentences=sorted(range(len(similarity_matrix[-1])),key=lambdai:similarity_matrix[-1][i])[-
+N:]
+#Concatenatethetopsentencestoformthesummary
+Summary=‘’
+Foriintop_sentences:
+Summary+=sentences[i]+‘‘
+Print(summary)
